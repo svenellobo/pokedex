@@ -1,9 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"testing"
 	"time"
-	"fmt"
 
 	"github.com/svenellobo/pokedex/internal/pokecache"
 )

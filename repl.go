@@ -19,7 +19,7 @@ type config struct {
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(*config) error
+	callback    func(*config, ...string) error
 }
 
 type nameResult struct {
@@ -34,8 +34,15 @@ func startRepl(cfg *config) {
 		scanner.Scan()
 		input := scanner.Text()
 		cleaned := cleanInput(input)
+		var secondWord string
 		if len(cleaned) == 0 {
 			continue
+
+			
+		} else if len(cleaned) < 2 {
+			secondWord = ""
+		} else {
+			secondWord = cleaned[1]
 		}
 
 		commandName := cleaned[0]
@@ -44,7 +51,7 @@ func startRepl(cfg *config) {
 			fmt.Println("Unknown command")
 			continue
 		} else {
-			if err := command.callback(cfg); err != nil {
+			if err := command.callback(cfg, secondWord); err != nil {
 				fmt.Println(err)
 			}
 
@@ -81,6 +88,12 @@ func getCommands() map[string]cliCommand {
 			name:        "mapb",
 			description: "Displays the names of previous 20 location areas",
 			callback:    commandMapb,
+		},
+
+		"explore": {
+			name:        "explore <location_name>",
+			description: "Explore a location",
+			callback:    commandExplore,
 		},
 	}
 }
