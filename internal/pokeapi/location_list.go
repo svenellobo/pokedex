@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"encoding/json"
+    
 )
 
 func (c *Client)FetchLocations(pageURL *string) (LocationAreaJson, error) {    
@@ -12,6 +13,13 @@ func (c *Client)FetchLocations(pageURL *string) (LocationAreaJson, error) {
 
     if pageURL != nil {
         url = *pageURL
+    }
+    
+    if ch, ok := c.cache.CacheGet(url); ok{
+        var locationResp LocationAreaJson
+        if err := json.Unmarshal(ch, &locationResp); err != nil {
+            return LocationAreaJson{}, err
+        }
     }
 
     req, err := http.NewRequest("GET", url, nil)
@@ -30,6 +38,8 @@ func (c *Client)FetchLocations(pageURL *string) (LocationAreaJson, error) {
     if err != nil {
         return LocationAreaJson{}, err
     }
+
+    c.cache.CacheAdd(url, data)
 
     var locationResp LocationAreaJson
     if err := json.Unmarshal(data, &locationResp); err != nil {
