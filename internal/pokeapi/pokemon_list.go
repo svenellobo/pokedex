@@ -6,9 +6,15 @@ import (
 	"net/http"
 )
 
-func (c *Client) FetchPokemon(locationName string) (ExplorePokemon, error) {
+func (c *Client) GetLocation(locationName string) (ExplorePokemon, error) {
 	url := baseURL + "/location-area/" + locationName
 
+	if val, exists := c.cache.CacheGet(url); exists {
+		var pokemonList ExplorePokemon
+		if err := json.Unmarshal(val, &pokemonList); err != nil {
+			return ExplorePokemon{}, err
+		}
+	}
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return ExplorePokemon{}, err
@@ -30,6 +36,8 @@ func (c *Client) FetchPokemon(locationName string) (ExplorePokemon, error) {
 	if err := json.Unmarshal(data, &pokemonList); err != nil {
 		return ExplorePokemon{}, err
 	}
+
+	c.cache.CacheAdd(url, data)
 
 	return pokemonList, nil
 }

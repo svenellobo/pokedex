@@ -13,7 +13,7 @@ func (c *Client) FetchLocations(pageURL *string) (LocationAreaJson, error) {
 		url = *pageURL
 	}
 
-	if ch, ok := c.cache.CacheGet(url); ok {
+	if ch, exists := c.cache.CacheGet(url); exists {
 		var locationResp LocationAreaJson
 		if err := json.Unmarshal(ch, &locationResp); err != nil {
 			return LocationAreaJson{}, err
@@ -37,12 +37,12 @@ func (c *Client) FetchLocations(pageURL *string) (LocationAreaJson, error) {
 		return LocationAreaJson{}, err
 	}
 
-	c.cache.CacheAdd(url, data)
-
 	var locationResp LocationAreaJson
 	if err := json.Unmarshal(data, &locationResp); err != nil {
 		return LocationAreaJson{}, err
 	}
+
+	c.cache.CacheAdd(url, data)
 
 	return locationResp, nil
 
