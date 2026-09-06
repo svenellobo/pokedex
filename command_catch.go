@@ -6,7 +6,7 @@ import (
 	"math/rand"
 )
 
-const catchThreshold = 40
+const catchThreshold = 50
 
 func commandCatch(cfg *config, args ...string) error {
 	if len(args) != 1 {
@@ -33,6 +33,7 @@ func commandCatch(cfg *config, args ...string) error {
 		fmt.Printf("%s escaped!\n", name)
 	} else {
 		fmt.Printf("%s was caught!\n", name)
+		fmt.Println("You may now inspect it with the inspect command.")
 		cfg.pokedex[name] = pokemonResp
 	}
 
